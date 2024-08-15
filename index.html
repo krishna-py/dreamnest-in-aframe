@@ -21,7 +21,12 @@
     <link rel="stylesheet" href="/style.css" />
 
     <!-- The website JavaScript file -->
-    <script src="/script.js" defer></script>
+    <script src="color-toggle.js" defer></script>
+    <script src="target-marker.js" defer></script>
+    <script src="mover.js" defer></script>
+    <script src="goaround.js" defer></script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
   </head>
   <body>
     <!--
@@ -31,41 +36,44 @@
     -->
     <div class="wrapper">
       <div class="content" role="main">
-        <h1 class="title">Hello World!</h1>
-        <img
-          src="https://cdn.glitch.com/a9975ea6-8949-4bab-addb-8a95021dc2da%2Fillustration.svg?v=1618177344016"
-          class="illustration"
-          alt="Editor illustration"
-          title="Click the image!"
-        />
-        <div class="instructions">
-          <h2>Using this project</h2>
-          <p>
-            This is the Glitch <strong>Hello Website</strong> project. You can
-            use it to build your own site. Check out the code in the editor and open
-            the <span class="fileopener" data-file="TODO.md" data-line="0"
-              >TODO</span> for next steps!
-          </p>
-          <button>
-            Click Me!
-          </button>
-        </div>
+        <a-scene cursor="rayOrigin: mouse">
+          <!-- Preload the assets -->
+          <a-assets>
+          <img id="autumn-sky" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/autumn_field_puresky.jpg?v=1723572545847"></a-asset-item>
+          <a-asset-item id="dinosaur" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/quetzalcoatlus.glb?v=1723573664643"></a-asset-item>
+          </a-assets>
+          
+          
+          <!-- Objects in the environment -->
+          <a-box position="-1.5  1 -1.5" rotation="0 0 0" color="#4CC3D9" target-marker 
+                  animation="property: rotation; to: 0 360 0; easing: linear; loop: true; dur: 5000"
+                  animation__2="property: position; to: 1.5 1 1.5; easing: linear; loop: true; dur: 5000"></a-box>
+          <a-sphere position="0 4 -3" radius="1.25" color="#EF2D5E" color-toggle mover></a-sphere>
+          <a-cylinder position="2 0.75 -2" radius="0.5" height="1.5" color="yellow"></a-cylinder>
+          
+          <!-- add the ground -->
+          <a-plane position="0 0 0" rotation="-90 0 0" width="30" height="30" color="brown"></a-plane>
+          <!-- corner stones -->
+          <a-box position="-15 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="15 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="-15 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="15 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="-15 0 0" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="15 0 0" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="0 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <a-box position="0 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
+          <!-- add the sky and other elements -->
+          <a-sky src="#autumn-sky"></a-sky>
+          <a-entity position="0 0 0" gltf-model="#dinosaur" animation-mixer goaround></a-entity>
+          
+          <!-- cameras -->
+          <a-entity id="rig">
+            <a-entity camera position="0 1.78 0" look-controls wasd-controls>
+              <a-cursor id="cursor" raycaster fuse="true" fusetimeout="3000"></a-cursor>
+            </a-entity>
+          </a-entity>
+        </a-scene>
       </div>
     </div>
-    <!-- The footer holds our remix button — you can keep or delete it ✂ -->
-    <footer class="footer">
-      <div class="links"></div>
-      <a
-        class="btn--remix"
-        target="_top"
-        href="https://glitch.com/edit/#!/remix/glitch-hello-website"
-      >
-        <img
-          src="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2FLogo_Color.svg?v=1618199565140"
-          alt=""
-        />
-        Remix on Glitch
-      </a>
-    </footer>
   </body>
 </html>
