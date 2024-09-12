@@ -1,79 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- 
+
+<head>
+  <!-- 
       This is an HTML comment
       You can write text in a comment and the content won't be visible in the page
     -->
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="https://glitch.com/favicon.ico" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="https://glitch.com/favicon.ico" />
 
-    <!--
+  <!--
       This is the page head - it contains info the browser uses
       Like the title, which appears on the browser tab but not inside the page
       Further down you'll see the content that displays in the page
     -->
-    <title>Hello World!</title>
+  <title>DreamNest in AFRAME.io</title>
 
-    <!-- The website stylesheet -->
-    <link rel="stylesheet" href="/style.css" />
+  <!-- The website stylesheet -->
+  <!-- <link rel="stylesheet" href="/style.css" /> -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
 
-    <!-- The website JavaScript file -->
-    <script src="color-toggle.js" defer></script>
-    <script src="target-marker.js" defer></script>
-    <script src="mover.js" defer></script>
-    <script src="goaround.js" defer></script>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
-  </head>
-  <body>
-    <!--
+  <script src="color-toggle.js" defer></script>
+  <script src="target-marker.js" defer></script>
+  <script src="mover.js" defer></script>
+  <script src="goaround.js" defer></script>
+  <script src="glb-marker.js" defer></script>
+  <script src="highlight.js" defer></script>
+  <script src="info-panel.js" defer></script>
+  <script src="update-info.js" defer></script>
+
+  <!-- The website JavaScript file -->
+  <script>
+    AFRAME.registerComponent('glow', {
+      schema: {
+        color: { default: '#ffffff', type: 'color' },
+        intensity: { default: 1.0 }
+      },
+      init: function () {
+        this.el.addEventListener('object3dset', function () {
+          this.update();
+        }.bind(this));
+      },
+      update: function () {
+        var data = this.data;
+        this.el.object3D.traverse(function (node) {
+          if (node.isMesh) {
+            node.material.emissive.copy(new THREE.Color(data.color));
+            node.material.emissiveIntensity = data.intensity;
+          }
+        });
+      }
+    });
+
+    AFRAME.registerComponent('levitate', {
+      tick: function (t, dt) {
+        var mesh = this.el.getObject3D('mesh');
+        if (!mesh) return;
+        mesh.rotation.y += 0.1 * dt / 1000;
+        mesh.position.y = 0.25 * Math.sin(t / 1000);
+      }
+    });
+  </script>
+
+  <!--   <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script> -->
+</head>
+
+<body>
+  <!--
       The body includes the content you see in the page
       Each element is defined using tags, like this <div></div>
       The attributes like class="wrapper" let us style elements in the CSS
     -->
-    <div class="wrapper">
-      <div class="content" role="main">
-        <a-scene cursor="rayOrigin: mouse">
-          <!-- Preload the assets -->
-          <a-assets>
-          <img id="autumn-sky" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/autumn_field_puresky.jpg?v=1723572545847"></a-asset-item>
-          <a-asset-item id="dinosaur" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/quetzalcoatlus.glb?v=1723573664643"></a-asset-item>
-          </a-assets>
-          
-          
-          <!-- Objects in the environment -->
-          <a-box position="-1.5  1 -1.5" rotation="0 0 0" color="#4CC3D9" target-marker 
-                  animation="property: rotation; to: 0 360 0; easing: linear; loop: true; dur: 5000"
-                  animation__2="property: position; to: 1.5 1 1.5; easing: linear; loop: true; dur: 5000"></a-box>
-          <a-sphere position="0 4 -3" radius="1.25" color="#EF2D5E" color-toggle mover></a-sphere>
-          <a-cylinder position="2 0.75 -2" radius="0.5" height="1.5" color="yellow"></a-cylinder>
-          
-          <!-- add the ground -->
-          <a-plane position="0 0 0" rotation="-90 0 0" width="30" height="30" color="brown"></a-plane>
-          <!-- corner stones -->
-          <a-box position="-15 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="15 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="-15 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="15 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="-15 0 0" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="15 0 0" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="0 0 15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <a-box position="0 0 -15" width="0.25" height="0.25" depth=".25" color="green"></a-box>
-          <!-- add the sky and other elements -->
-          <a-sky src="#autumn-sky"></a-sky>
-          <a-entity position="0 0 0" gltf-model="#dinosaur" animation-mixer goaround></a-entity>
-          
-          <!-- cameras -->
-          <a-entity id="rig">
-            <a-entity camera position="0 1.78 0" look-controls wasd-controls>
-              <a-cursor id="cursor" raycaster fuse="true" fusetimeout="3000"></a-cursor>
-            </a-entity>
-          </a-entity>
-        </a-scene>
-      </div>
-    </div>
-  </body>
+  <a-scene background="color: #212" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
+    <!-- Preload the assets -->
+    <a-assets>
+      <img id="autumn-sky"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/autumn_field_puresky.jpg?v=1724488449885">
+
+      <img id="ground_ao"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_ao_4k.jpg?v=1724489302997">
+      <img id="ground_disp"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_disp_4k.jpg?v=1725287678135">
+      <img id="ground_normal"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_nor_gl_4k.jpg?v=1725287693687">
+      <img id="ground_diff"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_diff_4k.jpg?v=1725287675848">
+
+      <!-- Load a SketchFab model gITF model -->
+      <a-asset-item id="villa1"
+        src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/modern_villa1.glb?v=1725287736144"></a-asset-item>
+      <a-asset-item id="picture_gallery"
+        src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/the_picture_gallery.glb?v=1725287755739"></a-asset-item>
+      <a-asset-item id="historic"
+        src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/kannonzaki_battery_historic_site.glb?v=1725287733071"></a-asset-item>
+      <a-asset-item id="dinosaur"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/quetzalcoatlus.glb?v=1725287736879"></a-asset-item>
+
+      <!-- Load checkpoint and navigation related stuff           -->
+      <a-asset-item id="gem"
+        src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/rupee.glb?v=1725372972201"></a-asset-item>
+
+      <!-- room styles -->
+      <img id="roomImage" src="assets/roomImage.png" />
+      <img id="roomStyle" src="assets/roomStyle.png" />
+
+      <a-mixin id="frame" geometry="primitive: plane; width: 0.5783552; height: 0.8192"
+        material="color: white; shader: flat"
+        animation__scale="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
+        animation__scale_reverse="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave"></a-mixin>
+      <a-mixin id="poster" geometry="primitive: plane; width: 0.544768; height: 0.786432"
+        material="color: white; shader: flat" material="shader: flat" position="0 0 0.005"></a-mixin>
+
+      <a-mixin id="roomImage" geometry="primitive: plane; width: 1.5; height: 0.81"
+        material="src: #roomImage; shader: flat; transparent: true" position="0 0.495 0.002"></a-mixin>
+    </a-assets>
+
+
+    <!-- Objects in the environment -->
+    <a-box position="-1.5  1 -1.5" rotation="0 0 0" color="#4CC3D9" target-marker
+      animation="property: rotation; to: 0 360 0; easing: linear; loop: true; dur: 5000"
+      animation__2="property: position; to: 1.5 1 1.5; easing: linear; loop: true; dur: 5000"></a-box>
+    <a-sphere position="0 4 -3" radius="1.25" color="#EF2D5E" color-toggle></a-sphere>
+    <a-cylinder position="2 0.75 -2" radius="0.5" height="1.5" color="yellow" glb-marker></a-cylinder>
+    <a-entity id="wall-gem" checkpoint="offset: 0 -0.8 0;" position="-9 7 -6" gltf-model="#gem" scale="0.05 0.05 0.05"
+      glow="color: #33FF66; intensity: 0.5" levitate>
+      <a-light type="point" intensity="0.5" color="#33FF66" distance="2" position="0.5 -0.25 0"></a-light>
+    </a-entity>
+
+    <!-- add realistic ground -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" material="src: #ground_diff; repeat: 30 30; 
+                    ambientOcclusionMap: #ground_ao; ambientOcclusionTextureRepeat: 30 30; 
+                    displacementMap: #ground_disp; displacementTextureRepeat: 30 30; 
+                    normalMap: #ground_normal; normalTextureRepeat: 30 30;"></a-plane>
+
+    <!--         <a-entity position="-10 .75 10" rotation="0 -90 0" scale="10 10 10" gltf-model="#picture_gallery"></a-entity> -->
+    <!-- <a-entity position="12 0.25 -75" rotation="0 -90 0" gltf-model="#historic"></a-entity> -->
+    <a-entity position="10 2 30" rotation="0 -90 0" gltf-model="#villa1"></a-entity>
+
+
+    <!-- corner stones -->
+    <a-box position="-15 0 -15" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="15 0 -15" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="-15 0 15" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="15 0 15" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="-15 0 0" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="15 0 0" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="0 0 15" width="0.25" height="25" depth=".25" color="green"></a-box>
+    <a-box position="0 0 -15" width="0.25" height="25" depth=".25" color="green"></a-box>
+
+    <!-- add the sky and other elements -->
+    <a-sky src="#autumn-sky"></a-sky>
+    <a-entity position="0 30 -5" rotation="0 -90 0" gltf-model="#dinosaur" animation-mixer goaround></a-entity>
+    <a-entity light="type: ambient; color: #BBB"></a-entity>
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+
+
+    <a-entity
+        id="background"
+        position="0 0 0"
+        geometry="primitive: sphere; radius: 2.0"
+        material="color: red; side: back; shader: flat"
+        scale="0.001 0.001 0.001"
+        visible="false" class="raycastable">
+    </a-entity>
+
+    <!-- cameras -->
+    <a-entity id="rig" movement-controls="controls: checkpoint, gamepad, trackpad, keyboard, nipple"
+      checkpoint-controls="mode: animate" position="-5 1.7 30" rotation="0 -90 0">
+      <a-entity id="head" camera look-controls="pointerLockEnabled: true"
+        wasd-controls update-info>
+        <a-entity cursor raycaster="objects:[checkpoint]" position="0 0 -1"
+          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
+          material="color: lightgreen; shader: flat;"></a-entity>
+      </a-entity>
+    </a-entity>
+
+    <!-- Hand controls -->
+    <a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: .raycastable"></a-entity>
+    <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .raycastable"
+      line="color: #118A7E"></a-entity>
+
+    <a-entity id="ui" position="0 1.6 -2.5">
+      <!-- Poster menu -->
+      <a-entity id="menu" highlight>
+        <a-entity id="roomStyleButton" position="0 0 0" mixin="frame" class="raycastable menu-button">
+          <a-entity material="src: #roomStyle;" mixin="poster"></a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Info panel of the selected movie. -->
+      <a-entity id="infoPanel" position="0 0 0.5" info-panel visible="false" scale="0.001 0.001 0.001"
+        geometry="primitive: plane; width: 1.5; height: 1.8" material="color: #333333; shader: flat; transparent: false"
+        class="raycastable">
+        <a-entity id="roomStyleImage" mixin="roomImage" material="src: #roomImage" visible="false"></a-entity>
+        <a-entity id="roomStyleName" position="-0.68 -0.1 0"
+          text="shader: msdf; anchor: left; width: 1.5; font: https://cdn.aframe.io/examples/ui/Viga-Regular.json; color: white; value: Ponyo (2003)"></a-entity>
+        <a-entity id="roomStyleDescription" position="-0.68 -0.2 0"
+          text="baseline: top; shader: msdf; anchor: left; font: https://cdn.aframe.io/examples/ui/Viga-Regular.json; color: white; value: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></a-entity>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+</body>
+
 </html>
