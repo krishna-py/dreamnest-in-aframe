@@ -18,13 +18,55 @@
     <title>Hello World!</title>
 
     <!-- The website stylesheet -->
-<!--     <link rel="stylesheet" href="/style.css" /> -->
+    <!-- <link rel="stylesheet" href="/style.css" /> -->
 
-    <!-- The website JavaScript file -->
-    <script src="/color-toggle.js" defer></script>
+    <script src="color-toggle.js" defer></script>
+    <script src="target-marker.js" defer></script>
+    <script src="mover.js" defer></script>
+    <script src="goaround.js" defer></script>
+    <script src="glb-marker.js" defer></script>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
+
+    <!-- The website JavaScript file -->
+    <script>
+      AFRAME.registerComponent("glow", {
+        schema: {
+          color: { default: "#ffffff", type: "color" },
+          intensity: { default: 1.0 },
+        },
+        init: function () {
+          this.el.addEventListener(
+            "object3dset",
+            function () {
+              this.update();
+            }.bind(this)
+          );
+        },
+        update: function () {
+          var data = this.data;
+          this.el.object3D.traverse(function (node) {
+            if (node.isMesh) {
+              node.material.emissive.copy(new THREE.Color(data.color));
+              node.material.emissiveIntensity = data.intensity;
+            }
+          });
+        },
+      });
+
+      AFRAME.registerComponent("levitate", {
+        tick: function (t, dt) {
+          var mesh = this.el.getObject3D("mesh");
+          if (!mesh) return;
+          mesh.rotation.y += (0.1 * dt) / 1000;
+          mesh.position.y = 0.25 * Math.sin(t / 1000);
+        },
+      });
+    </script>
+
+    <!--   <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script> -->
   </head>
+
   <body>
     <!--
       The body includes the content you see in the page
@@ -36,26 +78,295 @@
         <a-scene cursor="rayOrigin: mouse">
           <!-- Preload the assets -->
           <a-assets>
-          <img id="autumn-sky" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/autumn_field_puresky.jpg?v=1723572545847"></a-asset-item>
-          <a-asset-item id="dinosaur" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/quetzalcoatlus.glb?v=1723573664643"></a-asset-item>
+            <img
+              id="autumn-sky"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/autumn_field_puresky.jpg?v=1724488449885"
+            />
+            <img
+              id="rural-road"
+              src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/rural_asphalt_road.jpg?v=1726332208166"
+            />
+            <img
+              id="rural-plain"
+              src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/rosendal_plains_2.jpg?v=1726332065915"
+            />
+
+            <img
+              id="ground_ao"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_ao_4k.jpg?v=1724489302997"
+            />
+            <img
+              id="ground_disp"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_disp_4k.jpg?v=1725287678135"
+            />
+            <img
+              id="ground_normal"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_nor_gl_4k.jpg?v=1725287693687"
+            />
+            <img
+              id="ground_diff"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_diff_4k.jpg?v=1725287675848"
+            />
+            <img
+              id="pebble_ao"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/pebble_cemented_floor_ao_1k.jpg?v=1726333471776"
+            />
+            <img
+              id="pebble_disp"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/pebble_cemented_floor_disp_1k.jpg?v=1726333466411"
+            />
+            <img
+              id="pebble_normal"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/pebble_cemented_floor_nor_gl_1k.jpg?v=1726333464450"
+            />
+            <img
+              id="pebble_diff"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/pebble_cemented_floor_diff_1k.jpg?v=1726333468344"
+            />
+
+            <img
+              id="wall_ao"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/brick_wall_001_ao_1k.jpg?v=1726330392938"
+            />
+            <img
+              id="wall_disp"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/brick_wall_001_displacement_1k.jpg?v=1726330397326"
+            />
+            <img
+              id="wall_normal"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/brick_wall_001_nor_gl_1k.jpg?v=1726330398464"
+            />
+            <img
+              id="wall_diff"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/brick_wall_001_diffuse_1k.jpg?v=1726330396367"
+            />
+
+            <!-- Load a SketchFab model gITF model -->
+            <a-asset-item
+              id="villa1"
+              src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/modern_villa1.glb?v=1725287736144"
+            ></a-asset-item>
+            <!--           <a-asset-item id="picture_gallery" src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/the_picture_gallery.glb?v=1725287755739"></a-asset-item> -->
+            <!--           <a-asset-item id="historic" src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/kannonzaki_battery_historic_site.glb?v=1725287733071"></a-asset-item> -->
+            <!--           <a-asset-item id="dinosaur" src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/quetzalcoatlus.glb?v=1725287736879"></a-asset-item> -->
+
+            <!-- Load checkpoint and navigation related stuff           -->
+            <a-asset-item
+              id="gem"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/rupee.glb?v=1725372972201"
+            ></a-asset-item>
+            
+            <a-asset-item
+              id="iron-gate"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/iron_gate.glb?v=1726334281828"
+            ></a-asset-item>
+            <a-asset-item
+              id="flag-pole"
+              src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/low_poly_golf_flag_animated.glb?v=1726334286587"
+            ></a-asset-item>
+
+            <a-mixin
+              id="wall_tex"
+              material="src: #wall_diff; repeat: 25 1.5; 
+                    ambientOcclusionMap: #wall_ao; ambientOcclusionTextureRepeat: 25 1.5; 
+                    displacementMap: #wall_disp; displacementTextureRepeat: 25 1.5; 
+                    normalMap: #wall_normal; normalTextureRepeat: 25 1.5;"
+            ></a-mixin>
+            
+            <a-mixin id="tiled_floor"
+                     material="src: #ground_diff; repeat: 30 30; 
+                    ambientOcclusionMap: #ground_ao; ambientOcclusionTextureRepeat: 30 30; 
+                    displacementMap: #ground_disp; displacementTextureRepeat: 30 30; 
+                    normalMap: #ground_normal; normalTextureRepeat: 30 30;"
+                     ></a-mixin>
+            
+            <a-mixin id="pebble_floor"
+                     material="src: #pebble_diff; repeat: 30 30; 
+                    ambientOcclusionMap: #pebble_ao; ambientOcclusionTextureRepeat: 30 30; 
+                    displacementMap: #pebble_disp; displacementTextureRepeat: 30 30; 
+                    normalMap: #pebble_normal; normalTextureRepeat: 30 30;"
+                     ></a-mixin>
           </a-assets>
-          
-          
+
           <!-- Objects in the environment -->
-          <a-box position="-1.5  1 -1.5" rotation="0 0 0" color="#4CC3D9"></a-box>
-          <a-sphere position="0 1.25 -3" radius="1.25" color="#EF2D5E"></a-sphere>
-          <a-cylinder position="2 0.75 -2" radius="0.5" height="1.5" color="yellow"></a-cylinder>
-          
-          <!-- add the environment -->
-          <a-plane position="0 0 -4" rotation="-90 0 0" width="30" height="40" color="brown"></a-plane>
-          <a-sky src="#autumn-sky"></a-sky>
-          <a-entity position="0 10 -10" gltf-model="#dinosaur" animation-mixer></a-entity>
-          
+          <!--    <a-box position="-1.5  1 -1.5" rotation="0 0 0" color="#4CC3D9" target-marker 
+                  animation="property: rotation; to: 0 360 0; easing: linear; loop: true; dur: 5000"
+                  animation__2="property: position; to: 1.5 1 1.5; easing: linear; loop: true; dur: 5000"></a-box>
+        <a-sphere position="0 4 -3" radius="1.25" color="#EF2D5E" color-toggle></a-sphere>
+        <a-cylinder position="2 0.75 -2" radius="0.5" height="1.5" color="yellow" glb-marker></a-cylinder>
+        <a-entity id="wall-gem"
+                checkpoint="offset: 0 -0.8 0;"
+                position="-9 7 -6"
+                gltf-model="#gem"
+                scale="0.05 0.05 0.05"
+                glow="color: #33FF66; intensity: 0.5"
+                levitate>
+          <a-light type="point" intensity="0.5" color="#33FF66" distance="2" position="0.5 -0.25 0"></a-light>
+        </a-entity>
+ -->
+          <!-- add realistic ground -->
+          <a-plane
+            position="0 0 0"
+            rotation="-90 0 0"
+            width="30"
+            height="30"
+            mixin="pebble_floor"
+          ></a-plane>
+
+          <!--         <a-entity position="-10 .75 10" rotation="0 -90 0" scale="10 10 10" gltf-model="#picture_gallery"></a-entity> -->
+          <!-- <a-entity position="12 0.25 -75" rotation="0 -90 0" gltf-model="#historic"></a-entity> -->
+          <a-entity
+            position="0 1.6 -5"
+            rotation="0 0 0"
+            scale=".5 .5 .5"
+            gltf-model="#villa1"
+          ></a-entity>
+          <a-box
+            position="-15 1.5 0"
+            rotation="0 90 0"
+            mixin="wall_tex"
+            width="30"
+            height="2"
+            depth="0.2"
+          ></a-box>
+          <a-box
+            position="15 1.5 0"
+            rotation="0 90 0"
+            mixin="wall_tex"
+            width="30"
+            height="2"
+            depth="0.2"
+          ></a-box>
+          <a-box
+            position="0 1.5 -15"
+            rotation="0 0 0"
+            width="30"
+            height="2"
+            depth="0.2"
+            mixin="wall_tex"
+          ></a-box>
+          <a-box
+            position="-8 1.5 15"
+            rotation="0 0 0"
+            width="12"
+            height="2"
+            depth="0.2"
+            mixin="wall_tex"
+          ></a-box>
+          <a-box
+            position="8 1.5 15"
+            rotation="0 0 0"
+            width="12"
+            height="2"
+            depth="0.2"
+            mixin="wall_tex"
+          ></a-box>
+          <a-entity
+            position="0 2 14"
+            rotation="0 0 0"
+            scale=".2 .2 .2"
+            gltf-model="#iron-gate"
+          ></a-entity>
+
+          <!-- corner stones -->
+          <a-box id="corner-stone"
+            position="-15 0 -15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="-15 5 -15" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="15 0 -15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="15 5 -15" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="-15 0 15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="-15 5 15" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="15 0 15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="15 5 15" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="-15 0 0"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="-15 5 0" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="15 0 0"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="15 5 0" gltf-model="#flag-pole" animation-mixer></a-entity>
+          <a-box id="corner-stone"
+            position="0 0 15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-box id="corner-stone"
+            position="0 0 -15"
+            width="0.25"
+            height=".25"
+            depth=".25"
+            color="green"
+          ></a-box>
+          <a-entity position="0 5 -15" gltf-model="#flag-pole" animation-mixer></a-entity>
+
+          <!-- add the sky and other elements -->
+          <a-sky src="#rural-plain" radius="1000"></a-sky>
+          <!--         <a-entity position="0 30 -5" rotation="0 -90 0" gltf-model="#dinosaur" animation-mixer></a-entity> -->
+          <a-entity light="type: ambient; color: #BBB"></a-entity>
+          <a-entity
+            light="type: directional; color: #FFF; intensity: 0.6"
+            position="-0.5 1 1"
+          ></a-entity>
+
           <!-- cameras -->
-          <a-entity id="rig">
-            <a-entity camera position="0 1.78 0" look-controls wasd-controls>
-              <a-cursor id="cursor" raycaster fuse="true" fusetimeout="3000"></a-cursor>
+          <a-entity
+            id="rig"
+            position="0 1.7 5"
+            rotation="0 0 0"
+            movement-controls="controls: checkpoint, gamepad, trackpad, keyboard, nipple"
+            checkpoint-controls="mode: animate"
+          >
+            <a-entity
+              id="head"
+              camera
+              look-controls="pointerLockEnabled: true"
+              wasd-controls
+            >
+              <a-entity
+                cursor
+                raycaster="objects:[checkpoint]"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
+                material="color: lightgreen; shader: flat;"
+              ></a-entity>
             </a-entity>
+            <!--           <a-entity id="left-hand" teleport-controls="cameraRig: #rig; teleportOrigin: #head;"></a-entity> -->
+            <!--           <a-entity id="right-hand" teleport-controls="cameraRig: #rig; teleportOrigin: #head;"></a-entity> -->
+            <!--           <a-entity laser-controls="hand: right" raycaster="lineColor: red; lineOpacity: 0.5; far: 2"></a-entity> -->
           </a-entity>
         </a-scene>
       </div>
