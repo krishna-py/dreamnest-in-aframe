@@ -1,0 +1,102 @@
+<!-- 
+
+Prop Home informs the viewer about the primary highlights of the project, such as its location, nearby amenities, access road, etc.
+
+The scene is setup as a 2x2 meter platform at a height of 30cm, with geo spatial overlay of the property.
+
+The property itself is pinned to its the geo location above the platform. Above the property, at a height of 3m there will be compass indicator. 
+There can be small markers and posters for nearby areas of interest such as schools and hospitals.
+
+in VR mode, the user can walk around, and click the property itself and its markers to get more information. 
+For markers, info is the type, name, and distance. For the property, it is the project name, project start, hand over dates, occupancy levels, etc. 
+
+Configuration:
+1. Platform dimensions in w x h, scale of the map, height at which the property hovers, height at which the compass hovers, and the height of the markers.
+
+Interaction:
+1. Click on property
+2. Click on marker
+3. Stop/Rotate the platform
+
+ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Property Home Page</title>
+
+    <!-- Scripts  -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
+
+    <!-- Custom scripts -->
+    <script src="../levitate.js"></script>
+</head>
+
+<body>
+    <a-scene background="color: #212" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
+        <a-assets>
+
+            <!-- scene images -->
+            <img id="osm-svg" src="https://cdn.jsdelivr.net/gh/c-frame/aframe-props@main/assets/platform.png" />
+            <img id="compass" src="https://cdn.jsdelivr.net/gh/c-frame/aframe-props@main/assets/compass.png" />
+            
+            <!-- markers -->
+            <img id="generic-marker"
+                src="https://www.openstreetmap.org/assets/leaflet/dist/images/marker-icon-2x-f829f351ff65fba3c86d8126bdba6750121e164c304d8c34034d4d4620534dbe.png" />
+            <img id="shop-marker" src="../assets/markers/supermarket-icon.png" />
+            <img id="school-marker" src="../assets/markers/edu-icon.png" />
+            <img id="hospital-marker" src="../assets/markers/hospital-icon.png" />
+            <img id="bus-stop-marker" src="../assets/markers/public-transport-icon.png" />
+            <img id="eat-marker" src="../assets/markers/restau-icon.png" />
+            <img id="bank-atm-marker" src="../assets/markers/atm-cash.png" />
+            <a-asset-item id="villa1"
+                src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/modern_villa1.glb?v=1725287736144"></a-asset-item>
+
+            <!-- ground textures -->
+            <img id="ground_ao"
+            src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_ao_4k.jpg?v=1724489302997">
+            <img id="ground_disp"
+                src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_disp_4k.jpg?v=1725287678135">
+            <img id="ground_normal"
+                src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_nor_gl_4k.jpg?v=1725287693687">
+            <img id="ground_diff"
+                src="https://cdn.glitch.global/1a72625f-7082-4c2f-9a68-3914685b4e4e/square_tiles_diff_4k.jpg?v=1725287675848">
+    
+        </a-assets>
+
+        <!-- Basic scene setup -->
+        <!-- lights -->
+        <a-entity light="type: ambient; color: #BBB"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+        <!-- ground -->
+        <!-- add realistic ground -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" material="src: #ground_diff; repeat: 30 30; 
+                ambientOcclusionMap: #ground_ao; ambientOcclusionTextureRepeat: 30 30; 
+                displacementMap: #ground_disp; displacementTextureRepeat: 30 30; 
+                normalMap: #ground_normal; normalTextureRepeat: 30 30;"></a-plane>
+
+
+        <!-- objects in the scene -->
+        <a-sphere position="0 1 -3" radius=".25" color="#EF2D5E" color-toggle></a-sphere>
+
+        <!-- Camera  -->
+        <a-entity id="rig" movement-controls="controls: checkpoint, gamepad, trackpad, keyboard, nipple"
+            checkpoint-controls="mode: animate" position="0 1.7 -2" rotation="0 0 0">
+            <a-entity id="head" camera look-controls="pointerLockEnabled: true" wasd-controls update-info>
+                <a-entity cursor raycaster="objects:[checkpoint]" position="0 0 -1"
+                    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
+                    material="color: lightgreen; shader: flat;"></a-entity>
+            </a-entity>
+        </a-entity>
+
+
+    </a-scene>
+</body>
+
+</html>
