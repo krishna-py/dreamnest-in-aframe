@@ -39,12 +39,12 @@ Interaction:
 </head>
 
 <body>
-    <a-scene background="color: #212" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
+    <a-scene background="color: #87CEEB" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
         <a-assets>
 
             <!-- scene setup -->
             <!-- markers -->
-            <img id="compass" src="../assets/markers/compass-vector.png" />
+            <img id="compass" src="../assets/markers/north_arrow.png" />
             <img id="generic-marker" src="../assets/markers/gps-marker.png" />
             <img id="shop-marker" src="../assets/markers/supermarket-icon.png" />
             <img id="school-marker" src="../assets/markers/edu-icon.png" />
@@ -52,6 +52,8 @@ Interaction:
             <img id="bus-stop-marker" src="../assets/markers/public-transport-icon.png" />
             <img id="eat-marker" src="../assets/markers/restau-icon.png" />
             <img id="bank-atm-marker" src="../assets/markers/atm-cash.png" />
+            <a-asset-item id="property-marker"
+                src="../assets/markers/point_marker.glb"></a-asset-item>
 
             <!-- ground textures -->
             <img id="ground_ao" src="../assets/ground/pebble/pebble_cemented_floor_ao_1k.jpg">
@@ -62,14 +64,31 @@ Interaction:
             <!-- property specific -->
             <img id="osm-svg" src="../assets/scene/map_hyd.svg" />
             <a-asset-item id="property"
-                src="https://cdn.glitch.me/1a72625f-7082-4c2f-9a68-3914685b4e4e/modern_villa1.glb?v=1725287736144"></a-asset-item>
+                src="../assets/scene/modern_city_block.glb"></a-asset-item>
 
+            <!-- project infographics and videos -->
+            <img id="master-plan" src="../assets/scene/spectra_master_plan.png" />
+            <img id="unit-plan" src="../assets/scene/1980_3BHK_West_Type-1.webp" />
+            <img id="project-overview" src="../assets/scene/project-overview.png"  />
+            <video id="progress" preload="auto" src="https://www.youtube.com/watch?v=LpDMtlxihHo"
+                width="160" height="90" autoplay loop="true"
+                crossOrigin="anonymous" muted></video>
+
+            <!-- ground and map things -->
             <a-mixin id="pebble_ground" material="src: #ground_diff; repeat: 10 10; 
                 ambientOcclusionMap: #ground_ao; ambientOcclusionTextureRepeat: 10 10; 
                 displacementMap: #ground_disp; displacementTextureRepeat: 10 10; 
                 normalMap: #ground_normal; normalTextureRepeat: 10 10;"></a-mixin>
 
             <a-mixin id="map_svg" material="src: #osm-svg;"></a-mixin>
+
+            <a-mixin id="frame" geometry="primitive: plane; width: 5.52; height: 3"
+                material="color: white; shader: flat"
+                animation__scale="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
+                animation__scale_reverse="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave"></a-mixin>
+
+            <a-mixin id="poster" geometry="primitive: plane; width: 5; height: 2.8"
+                material="color: white; shader: flat" material="shader: flat" position="0 0 0.005"></a-mixin>
         </a-assets>
 
         <!-- Basic scene setup -->
@@ -78,20 +97,89 @@ Interaction:
         <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="0 10 0"></a-entity>
         <!-- ground -->
         <!-- add realistic ground -->
-        <a-plane id="ground" position="0 -.9 0" rotation="-90 0 0" width="10" height="10" mixin="pebble_ground"></a-plane>
+        <a-plane id="ground" position="0 -.9 0" rotation="-90 0 0" width="10" height="10" mixin="pebble_ground">
+        </a-plane>
+        <!-- set compass around the map platform in a 3x3 grid -->
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="0 0.05 -2" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="0 0.05 2" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="2 0.05 0" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-2 0.05 0" rotation="-90 0 0"></a-image>
+        
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="0 0.05 -4" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="0 0.05 4" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="4 0.05 0" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-4 0.05 0" rotation="-90 0 0"></a-image>
+        
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="2 0.05 -2" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-2 0.05 -2" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="2 0.05 2" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-2 0.05 2" rotation="-90 0 0"></a-image>
+
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="4 0.05 -4" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-4 0.05 -4" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="4 0.05 4" rotation="-90 0 0"></a-image>
+        <a-image src="#compass" width="0.5" height="0.5" depth="0.01" opacity=".5" position="-4 0.05 4" rotation="-90 0 0"></a-image>
+        
         
         <!-- objects in the scene -->
-        <!-- <a-sphere position="0 1 -3" radius=".25" color="#EF2D5E" color-toggle></a-sphere> -->
+        <!-- setup the platform -->
         <!-- add a raised platform to display the map -->
-        <a-box src="#osm-svg" width="5.56" height="3" depth="0.01" position="0 0.25 0" rotation="-90 0 0">
-            <a-image src="#compass" width="1" height="1" depth="0.01" position="0 0 2" opacity=".5"></a-image>
-        </a-box>
-        <!-- scaled villa project in the middle levitating -->
-        <a-entity gltf-model="#property" position="0 1 0" rotation="0 0 0" scale="0.05 0.05 0.05" levitate></a-entity>
+        <a-image id="location-map" src="#osm-svg" width="5.56" height="3" depth="0.01" position="0 2 -5">
+            <a-text value="Location" align="center" width="5.56" position="0 1.8 0" color="black"></a-text>
+            <a-entity id="amenities-layer" position="0 0 0" rotation="0 0 0">
+                <a-entity gltf-model="#property-marker" position="0 .05 0" rotation="45 45 0" scale="0.051 0.051 0.051"></a-entity>
+                <a-image src="#shop-marker" position="0 -1 .05" rotation="0 0 0" scale="0.2 0.2 0.2" ></a-image>
+                <a-image src="#school-marker" position="0 1 0.05" rotation="0 0 0" scale="0.2 0.2 0.2" ></a-image>
+                <a-image src="#hospital-marker" position="-1 0 .05" rotation="0 0 0" scale="0.2 0.2 0.2" ></a-image>
+                <a-image src="#bus-stop-marker" position="1 0 .05" rotation="0 0 0" scale="0.2 0.2 0.2"></a-image>
+            </a-entity>    
+        </a-image>
+
+
+        <!-- scaled villa project in the middle levitating, because levitating doesnt work with rotated axis at the moment -->
+        <a-entity position="0 0 0" rotation="0 0 0">
+            <a-entity gltf-model="#property" position="1.65 0.5 -0.5" rotation="0 -43 0" scale="0.0001 0.0001 0.0001" levitate></a-entity>
+        </a-entity>
+
+        <!-- add info boards around the ground -->
+        <!-- <a-video src="#progress" width="5.56" height="3" position="0 4 -5"></a-video> -->
+        <a-entity id="info1" position="5 2 0" rotation="0 -90 0">
+            <!-- Info title -->
+            <a-text value="Master Plan" align="center" width="5.56" position="0 1.8 0" color="black"></a-text>
+            <!-- Info content -->
+            <a-entity id="info1-content">
+              <a-entity id="info1-img" position="0 0 0" mixin="frame" class="raycastable menu-button">
+                <a-entity material="src: #master-plan;" mixin="poster"></a-entity>
+              </a-entity>
+            </a-entity>
+        </a-entity>
+        
+        <a-entity id="info2" position="-5 2 0" rotation="0 90 0">
+            <!-- Info title -->
+            <a-text value="Unit Plan" align="center" width="5.56" position="0 1.8 0" color="black"></a-text>
+            <!-- Info content -->
+            <a-entity id="info2-content">
+              <a-entity id="info2-img" position="0 0 0" mixin="frame" class="raycastable menu-button">
+                <a-entity material="src: #unit-plan;" mixin="poster"></a-entity>
+              </a-entity>
+            </a-entity>
+        </a-entity>
+
+
+        <a-entity id="info3" position="0 2 5" rotation="0 180 0">
+            <!-- Info title -->
+            <a-text value="ASBL Spectra - Gachibowli" align="center" width="5.56" position="0 1.8 0" color="black"></a-text>
+            <!-- Info content -->
+            <a-entity id="info3-content">
+              <a-entity id="info3-img" position="0 0 0" mixin="frame" class="raycastable menu-button">
+                <a-entity material="src: #project-overview;" mixin="poster"></a-entity>
+              </a-entity>
+            </a-entity>
+        </a-entity>
 
         <!-- Camera  -->
         <a-entity id="rig" movement-controls="controls: checkpoint, gamepad, trackpad, keyboard, nipple"
-            checkpoint-controls="mode: animate" position="0 1.6 2" rotation="0 0 0">
+            checkpoint-controls="mode: animate" position="0 1.6 4" rotation="0 0 0">
             <a-entity id="head" camera look-controls="pointerLockEnabled: true" wasd-controls update-info>
                 <a-entity cursor raycaster="objects:[checkpoint]" position="0 0 -1"
                     geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
@@ -99,6 +187,8 @@ Interaction:
             </a-entity>
         </a-entity>
 
+        <!-- optionally if its a single project, show ground from inside the object as a sort of welcome area -->
+        <!-- <a-entity id="surround-view" gltf-model="#property" position="0 -.2 14.5" rotation="0 0 0" scale="0.3 0.3 0.3"></a-entity> -->
 
     </a-scene>
 </body>
