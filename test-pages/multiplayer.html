@@ -1,0 +1,107 @@
+<!-- 
+
+Prop Home informs the viewer about the primary highlights of the project, such as its location, nearby amenities, access road, etc.
+
+The scene is setup as a 2x2 meter platform at a height of 30cm, with geo spatial overlay of the property.
+
+The property itself is pinned to its the geo location above the platform. Above the property, at a height of 3m there will be compass indicator. 
+There can be small markers and posters for nearby areas of interest such as schools and hospitals.
+
+in VR mode, the user can walk around, and click the property itself and its markers to get more information. 
+For markers, info is the type, name, and distance. For the property, it is the project name, project start, hand over dates, occupancy levels, etc. 
+
+Configuration:
+1. Platform dimensions in w x h, scale of the map, height at which the property hovers, height at which the compass hovers, and the height of the markers.
+
+Interaction:
+1. Click on property
+2. Click on marker
+3. Stop/Rotate the platform
+
+ -->
+
+
+ <!DOCTYPE html>
+ <html lang="en">
+ 
+ <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+     <title>Property Home Page</title>
+ 
+     <!-- Scripts  -->
+     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
+     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+ 
+     <!-- Custom scripts -->
+     <script src="../js/levitate.js"></script>
+     <script src="../js/update-pose.js"></script>
+ </head>
+ 
+ <body>
+     <a-scene background="color: #87CEEB" cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
+         <a-assets>
+ 
+             <!-- scene setup -->
+             <a-asset-item id="ufo-pose" src="../assets/scene/ufo.glb"></a-asset-item>
+             <a-asset-item id="eye-pose" src="../assets/scene/duck.glb"></a-asset-item>
+
+             <!-- markers -->
+            <!-- ground textures -->
+             <img id="ground_ao" src="../assets/ground/pebble/pebble_cemented_floor_ao_1k.jpg">
+             <img id="ground_disp" src="../assets/ground/pebble/pebble_cemented_floor_disp_1k.jpg">
+             <img id="ground_normal" src="../assets/ground/pebble/pebble_cemented_floor_nor_gl_1k.jpg">
+             <img id="ground_diff" src="../assets/ground/pebble/pebble_cemented_floor_diff_1k.jpg">
+ 
+             <!-- project infographics and videos -->
+             <img id="master-plan" src="../assets/scene/spectra_master_plan.png" />
+ 
+             <!-- ground and map things -->
+             <a-mixin id="pebble_ground" material="src: #ground_diff; repeat: 10 10; 
+                 ambientOcclusionMap: #ground_ao; ambientOcclusionTextureRepeat: 10 10; 
+                 displacementMap: #ground_disp; displacementTextureRepeat: 10 10; 
+                 normalMap: #ground_normal; normalTextureRepeat: 10 10;"></a-mixin>
+ 
+             <a-mixin id="frame" geometry="primitive: plane; width: 5.5; height: 3.1"
+                 material="color: #879ceb; shader: flat"
+                 animation__scale="property: scale; to: 1.1 1.1 1.1; dur: 200; startEvents: mouseenter"
+                 animation__scale_reverse="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave"></a-mixin>
+ 
+             <a-mixin id="poster" geometry="primitive: plane; width: 5.4; height: 3"
+                 material="color: white; shader: flat" material="shader: flat" position="0 0 0.005"></a-mixin>
+         </a-assets>
+ 
+         <!-- Basic scene setup -->
+         <!-- lights -->
+         <a-entity light="type: ambient; color: #BBB"></a-entity>
+         <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="0 10 0"></a-entity>
+         <!-- ground -->
+         <!-- add realistic ground -->
+         <a-plane id="ground" position="0 -.9 0" rotation="-90 0 0" width="10" height="10" mixin="pebble_ground">
+         </a-plane>
+ 
+         <!-- add info boards around the ground -->
+         <!-- <a-video src="#progress" width="5.56" height="3" position="0 4 -5"></a-video> -->
+         <a-entity id="info1" position="5 2 0" rotation="0 -90 0">
+             <!-- Info title -->
+             <a-text value="Master Plan" align="center" width="5.56" position="0 1.85 0" color="black"></a-text>
+             <!-- Info content -->
+             <a-entity id="info1-content">
+               <a-entity id="info1-img" position="0 0 0" mixin="frame" class="raycastable menu-button">
+                 <a-entity material="src: #master-plan;" mixin="poster"></a-entity>
+               </a-entity>
+             </a-entity>
+         </a-entity>
+        
+         <!-- Camera  -->
+         <a-entity id="rig" position="0 1.6 4" rotation="0 0 0" follow-duck="target: #duck" look-controls>
+             <a-entity id="head" camera></a-entity>
+         </a-entity>
+         <a-entity id="duck" gltf-model="#eye-pose" wasd-controls="acceleration:10" position="0 0 -1" rotation="0 180 0" scale="0.3 0.3 0.3" animation-mixer="clip: idle" rotate-with-camera></a-entity>
+         
+     </a-scene>
+ </body>
+ 
+ </html>
