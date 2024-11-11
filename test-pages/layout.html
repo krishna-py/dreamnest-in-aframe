@@ -29,21 +29,21 @@
                 </script> -->
 
             <script id="stalls" type="text/x-nunjucks-template">
-                {% for stall in range(0, 6) %}
-                <a-entity id="stall-{{ stall }}" info-panel polar-position-xz="radius: 6; theta: {{ 60*stall }};">
+                {% for stall in range(0, 5) %}
+                <a-entity id="stall-{{ stall }}" info-panel fetch-data="idx: {{ stall }}" polar-position-xz="radius: 6; theta: {{ 72*stall }};">
                     <a-box id="bg-box" side="double" width="3.6" height="3" depth="0.1" color="#333333" opacity=".75" random-color>
-                        <a-entity id="info-title-{{ stall }}" position="-1.6 .85 0.1"
+                        <a-entity id="info-title" position="-1.6 .85 0.1"
                             text="shader: msdf; anchor: left; width: 4; font: https://cdn.aframe.io/examples/ui/Viga-Regular.json; color: white; value: Ponyo ({{ stall }})">
                         </a-entity>
-                        <a-image id="info-png-{{ stall }}" position="0 0 0.07" color="#FFF" width="3.6" height="2.4"
+                        <a-image id="info-png" position="0 0 0.07" color="#FFF" width="3.6" height="2.4"
                             src="../assets/room/kitchen/roomImage.png">
                         </a-image>
-                        <a-entity id="infoPanel" position="0 -1.3 0.5" visible="false"
+                        <a-entity id="infoPanel" position="0 -1.3 1.5" visible="false"
                             geometry="primitive: plane; width: 1.5; height: 1"
                             material="color: #333333; shader: flat; transparent: false" class="raycastable">
-                            <a-entity id="info-title" position="-0.68 .2 0"
+                            <a-entity id="panel-title" position="-0.68 .2 0"
                                 text="shader: msdf; anchor: left; width: 1.5; font: https://cdn.aframe.io/examples/ui/Viga-Regular.json; color: white; value: Ponyo (2003)"></a-entity>
-                            <a-entity id="info-desc" position="-0.68 .1 0"
+                            <a-entity id="panel-desc" position="-0.68 .1 0"
                                 text="baseline: top; shader: msdf; anchor: left; font: https://cdn.aframe.io/examples/ui/Viga-Regular.json; color: white; value: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></a-entity>
                         </a-entity>
                     </a-box>
@@ -64,7 +64,7 @@
         <a-entity id="mouseCursor" cursor="rayOrigin: mouse"></a-entity>
 
         <!-- These are the actual lobby entities -->
-        <a-entity template="src: #stalls" position="0 1.2 0"></a-entity>
+        <a-entity template="src: #stalls; data: stall-data" stall-data="data" position="0 1.2 0"></a-entity>
 
         <!-- <a-entity layout="type: line; margin: 5; plane: xz; align: center" position="2 1.2 -6" rotation="0 30 0">
             <a-entity id="lobby-area-0" info-panel rotation="0 -30 0">
@@ -196,15 +196,15 @@
     </a-scene>
 </body>
 <script>
-    var data = [
-        {
+    var stall_data = {
+        "stall-0": {
             "title": "Master",
             "infographic": "public/assets/listing/infographics2/plans/Hero.webp",
             "text-content": [
                 "4 towers planned"
             ]
         },
-        {
+        "stall-1": {
             "title": "Tower A",
             "infographic": "public/assets/listing/infographics2/plans/TowerA.webp",
             "text-content": [
@@ -212,7 +212,7 @@
                 "No common walls"
             ]
         },
-        {
+        "stall-2": {
             "title": "Unit A",
             "infographic": "public/assets/listing/infographics2/plans/1975-East-A.webp",
             "text-content": [
@@ -222,7 +222,7 @@
             ],
             "model": "public/assets/listing/others/unit_b.glb"
         },
-        {
+        "stall-3": {
             "title": "Unit B",
             "infographic": "public/assets/listing/infographics2/plans/1805-West-B.webp",
             "text-content": [
@@ -232,7 +232,7 @@
             ],
             "model": "public/assets/listing/others/unit_b.glb"
         },
-        {
+        "stall-4": {
             "title": "Unit C",
             "infographic": "public/assets/listing/infographics2/plans/2065-West-C.webp",
             "text-content": [
@@ -241,17 +241,7 @@
             ],
             "model": "public/assets/listing/others/unit_c.glb"
         }
-    ];
-
-    const radius = 4;
-    const landmarks_deg = [0, 60, 120, 180, 240, 300];
-    const landmarks_x = landmarks_deg.map(deg => Math.cos(deg * Math.PI / 180) * radius);
-    const landmarks_z = landmarks_deg.map(deg => Math.sin(deg * Math.PI / 180) * radius);
-    console.log(landmarks_deg, landmarks_x, landmarks_z);
-
-    console.log(data['title']);
-    console.log(data['text-content']);
-    console.log(data['children']);
+    };
 
     /* global AFRAME */
     AFRAME.registerComponent('info-panel', {
@@ -300,12 +290,33 @@
         }
     });
 
-    AFRAME.registerComponent('stall-data', {
+    AFRAME.registerComponent('fetch-data', {
         schema: {
-            title: { type: 'string' },
-            infographic: { type: 'string' },
-            text_content: { type: 'array' },
-            model: { type: 'string', default: '' },
+            idx: { default: 0 },
+        },
+        init: function () {
+            if (this.data.idx >= Object.keys(stall_data).length) {
+                this.el.setAttribute('visible', false);
+                return;
+            }
+
+            let title = this.el.querySelector('#info-title');
+            let graphic = this.el.querySelector('#info-png');
+            let panel = this.el.querySelector('#infoPanel');
+            let panel_title = panel.querySelector('#panel-title');
+            let panel_desc = panel.querySelector('#panel-desc');
+
+            title.setAttribute('text', {
+                value: stall_data['stall-' + this.data.idx]['title']
+            });
+
+            panel_title.setAttribute('text', {
+                value: stall_data['stall-' + this.data.idx]['title']
+            });
+
+            panel_desc.setAttribute('text', {
+                value: stall_data['stall-' + this.data.idx]['text-content'].join('\n')
+            });
         }
     });
 </script>
